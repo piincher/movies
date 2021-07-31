@@ -5,13 +5,14 @@ const fetch = async (searchTerm) => {
 			s: searchTerm
 		}
 	});
-	console.log(data);
+	return data.Search;
 };
 
 const input = document.querySelector('input');
 
 let timeoutId;
-const onInput = (event) => {
-	fetch(event.target.value);
+const onInput = async (event) => {
+	const movie = await fetch(event.target.value);
+	console.log(movie);
 };
 input.addEventListener('input', debounce(onInput, 1000));
