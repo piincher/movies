@@ -1,19 +1,16 @@
-createAutoComplete({
-	root: document.querySelector('.autocomplete'),
+const autoCompleteConfig = {
 	renderOption(movie) {
-		const imageSRC = movie.Poster === 'N/A' ? '' : movie.Poster;
+		const imgSrc = movie.Poster === 'N/A' ? '' : movie.Poster;
 		return `
-      <img src="${imageSRC}" />
-      ${movie.Title}(${movie.Year})
-	`;
-	},
-	onOptionSelect(movie) {
-		onMovieSelect(movie);
+      <img src="${imgSrc}" />
+      ${movie.Title} (${movie.Year})
+    `;
 	},
 	inputValue(movie) {
 		return movie.Title;
 	},
 	async fetchData(searchTerm) {
+		f;
 		const response = await axios.get('http://www.omdbapi.com/', {
 			params: {
 				apikey: '66847f69',
@@ -27,17 +24,52 @@ createAutoComplete({
 
 		return response.data.Search;
 	}
+};
+
+createAutoComplete({
+	...autoCompleteConfig,
+	root: document.querySelector('#left-autocomplete'),
+	onOptionSelect(movie) {
+		document.querySelector('.tutorial').classList.add('is-hidden');
+		onMovieSelect(movie, document.querySelector('#left-summary'), 'left');
+	}
+});
+createAutoComplete({
+	...autoCompleteConfig,
+	root: document.querySelector('#right-autocomplete'),
+	onOptionSelect(movie) {
+		document.querySelector('.tutorial').classList.add('is-hidden');
+		onMovieSelect(movie, document.querySelector('#right-summary'), 'right');
+	}
 });
 
-const onMovieSelect = async (movie) => {
+let leftMovie;
+let rightMovie;
+const onMovieSelect = async (movie, summaryElement, side) => {
 	const response = await axios.get('http://www.omdbapi.com/', {
 		params: {
-			apikey: '66847f69',
+			apikey: 'd9835cc5',
 			i: movie.imdbID
 		}
 	});
-	document.querySelector('#summary').innerHTML = movieTemplate(response.data);
+
+	summaryElement.innerHTML = movieTemplate(response.data);
+
+	if (side === 'left') {
+		leftMovie = response.data;
+	} else {
+		rightMovie = response.data;
+	}
+
+	if (leftMovie && rightMovie) {
+		runComparison();
+	}
 };
+
+const runComparison = () => {
+	console.log('Time for comparison');
+};
+
 const movieTemplate = (movieDetail) => {
 	return `
     <article class="media">
